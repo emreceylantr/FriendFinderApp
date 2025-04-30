@@ -7,24 +7,24 @@
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: #f2f2f2;
+            background: #f0f2f5;
             margin: 0;
             padding: 20px;
         }
 
         .profile-card {
-            max-width: 700px;
+            max-width: 720px;
             margin: auto;
             background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 0 14px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
         }
 
         .header {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 25px;
         }
 
         .header img {
@@ -32,66 +32,105 @@
             height: 120px;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid #ddd;
+            border: 3px solid #3498db;
         }
 
         .header-info h2 {
-            margin: 0;
-            font-size: 24px;
+            margin: 0 0 8px;
+            font-size: 26px;
             color: #2c3e50;
         }
 
         .info-list {
-            margin-top: 10px;
+            margin-top: 5px;
         }
 
         .info-list p {
-            margin: 5px 0;
+            margin: 6px 0;
+            font-size: 15px;
         }
 
         .info-list strong {
             color: #34495e;
         }
 
-        .chat-btn {
+        .chat-btn, .block-btn {
             display: inline-block;
             margin-top: 15px;
-            padding: 10px 20px;
-            background-color: #3498db;
+            padding: 10px 24px;
             color: white;
             text-decoration: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-weight: bold;
+            font-size: 15px;
+            transition: background-color 0.2s ease;
         }
 
-        .chat-btn i {
+        .chat-btn {
+            background-color: #3498db;
+        }
+
+        .chat-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .block-btn {
+            background-color: #e74c3c;
+            margin-left: 10px;
+        }
+
+        .block-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .chat-btn i, .block-btn i {
             margin-right: 8px;
         }
 
         .friends-section {
-            margin-top: 30px;
+            margin-top: 35px;
         }
 
         .friends-section h3 {
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 5px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 6px;
+            margin-bottom: 15px;
             color: #2c3e50;
+            font-size: 20px;
         }
 
-        .friends-section ul {
-            list-style: none;
-            padding-left: 0;
+        .friend-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
-        .friends-section li {
-            padding: 6px 0;
+        .friend-item {
+            background: #e1ecf4;
+            padding: 8px 14px;
+            border-radius: 30px;
+            font-size: 14px;
+            color: #1c4966;
+            font-weight: 500;
+            transition: background 0.2s ease;
+        }
+
+        .friend-item:hover {
+            background: #d0e6f8;
         }
 
         .back-link {
-            margin-top: 20px;
+            margin-top: 25px;
             display: inline-block;
             text-decoration: none;
             color: #8e44ad;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #6c3483;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -110,21 +149,25 @@
                 <p th:if="${user.dateOfBirth != null}"><strong>Doğum Tarihi:</strong> <span th:text="${#temporals.format(user.dateOfBirth, 'dd.MM.yyyy')}"></span></p>
                 <p><strong>Yaş:</strong> <span th:text="${age != null ? age : 'Hesaplanamadı'}">0</span></p>
                 <p><strong>Burç:</strong> <span th:text="${zodiac != null ? zodiac : 'Bilinmiyor'}">Burç</span></p>
+
                 <a class="chat-btn" th:href="@{/chat/{username}(username=${user.username})}"><i class="fas fa-comments"></i> Chat Başlat</a>
+
+                <form th:action="@{/profile/block/{username}(username=${user.username})}" method="post" style="display:inline">
+                    <button class="block-btn" type="submit"><i class="fas fa-ban"></i> Engelle</button>
+                </form>
             </div>
         </div>
     </div>
 
     <div class="friends-section">
         <h3>Arkadaşları</h3>
-        <ul>
-            <li th:if="${#lists.isEmpty(user.friends)}">Bu kullanıcının hiç arkadaşı yok.</li>
-            <li th:each="friend : ${user.friends}" th:text="${friend.username}"></li>
-        </ul>
+        <div class="friend-list">
+            <span th:if="${#lists.isEmpty(user.friends)}">Bu kullanıcının hiç arkadaşı yok.</span>
+            <span class="friend-item" th:each="friend : ${user.friends}" th:text="${friend.username}"></span>
+        </div>
     </div>
 
     <div>
-        <!-- Dinamik geri dönüş: Eğer kullanıcı admin değilse /profile sayfasına yönlendirme -->
         <a class="back-link"
            th:href="${#authorization.expression('hasRole(''ADMIN'')')} ? @{/admin/users} : @{/profile}">
             ← Geri Dön

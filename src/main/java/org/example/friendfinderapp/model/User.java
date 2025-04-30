@@ -46,6 +46,14 @@ public class User {
     )
     private Set<User> friends = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "user_blocks",
+            joinColumns = @JoinColumn(name = "blocker_id"),
+            inverseJoinColumns = @JoinColumn(name = "blocked_id")
+    )
+    private Set<User> blockedUsers = new HashSet<>();
+
     // --- Getter / Setter ---
 
     public Long getId() { return id; }
@@ -76,4 +84,7 @@ public class User {
 
     public Set<User> getFriends() { return friends; }
     public void setFriends(Set<User> friends) { this.friends = friends; }
+
+    public Set<User> getBlockedUsers() { return blockedUsers; }
+    public void setBlockedUsers(Set<User> blockedUsers) { this.blockedUsers = blockedUsers; }
 }

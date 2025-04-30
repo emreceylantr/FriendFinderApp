@@ -110,6 +110,10 @@ public class UserService {
             throw new IllegalArgumentException("Geçersiz kullanıcı adı.");
         }
 
+        if (target.getBlockedUsers().contains(requester)) {
+            return; // engellenmişse istek gönderilmesin
+        }
+
         FriendRequest request = new FriendRequest();
         request.setRequester(requester);
         request.setTarget(target);
@@ -169,5 +173,22 @@ public class UserService {
             userRepo.save(currentUser);
             userRepo.save(friend);
         }
+    }
+
+    @Transactional
+    public void blockUser(String blockerUsername, String blockedUsername) {
+        User blocker = userRepo.findByUsername(blockerUsername);
+        User blocked = userRepo.findByUsername(blockedUsername);
+        if (blocker != null && blocked != null) {
+            blocker.getBlockedUsers().add(blocked);
+            blocker.getFriends().remove(blocked);
+            blocked.getFriends().remove(blocker);
+            userRepo.save(blocker);
+            userRepo.save(blocked);
+        }
+    }
+
+    public boolean isBlocked(User requester, User target) {
+        return target.getBlockedUsers().contains(requester);
     }
 }

@@ -36,6 +36,10 @@ public class FriendService {
         FriendType type = typeRepo.findById(typeId)
                 .orElseThrow(() -> new IllegalArgumentException("FriendType bulunamadı: " + typeId));
 
+        if (target.getBlockedUsers().contains(requester)) {
+            return; // engellenmişse istek gönderme
+        }
+
         FriendRequest fr = new FriendRequest();
         fr.setRequester(requester);
         fr.setTarget(target);

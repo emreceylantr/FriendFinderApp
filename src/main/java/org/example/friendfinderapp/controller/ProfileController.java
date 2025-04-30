@@ -51,6 +51,7 @@ public class ProfileController {
         me.setLastName(form.getLastName());
         me.setDateOfBirth(form.getDateOfBirth());
         me.setPhotoUrl(form.getPhotoUrl());
+        me.setBio(form.getBio());
         userService.save(me);
         return "redirect:/profile";
     }
@@ -81,7 +82,23 @@ public class ProfileController {
         return "redirect:/profile";
     }
 
-    // 👇 Yeni: Başka kullanıcıyı profil olarak görüntüleme
+    @PostMapping("/block/{username}")
+    public String blockUser(@PathVariable String username, Principal principal) {
+        userService.blockUser(principal.getName(), username);
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/unblock/{username}")
+    public String unblockUser(@PathVariable String username, Principal principal) {
+        User currentUser = userService.findByUsername(principal.getName());
+        User toUnblock = userService.findByUsername(username);
+        if (currentUser != null && toUnblock != null) {
+            currentUser.getBlockedUsers().remove(toUnblock);
+            userService.save(currentUser);
+        }
+        return "redirect:/profile";
+    }
+
     @GetMapping("/view/{username}")
     public String viewOtherProfile(@PathVariable String username, Model model) {
         User user = userService.findByUsername(username);
