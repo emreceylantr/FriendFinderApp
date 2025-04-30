@@ -1,0 +1,164 @@
+<!-- src/main/resources/templates/profile.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Profilim</title>
+    <style>
+        .profile-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        .admin-button {
+            display: block;
+            margin: 10px auto;
+            text-align: center;
+        }
+
+        .admin-button a {
+            background-color: #c0392b;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .admin-button a:hover {
+            background-color: #a93226;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ✅ Admin panel butonu sadece admin'lere görünür -->
+<div class="admin-button"
+     th:if="${#authentication != null and #authorization.expression('hasRole(''ADMIN'')')}">
+    <a th:href="@{/admin/users}">🔧 Admin Paneli</a>
+</div>
+
+<!-- ✅ Moderatör panel butonu sadece moderator'lere görünür -->
+<div class="admin-button"
+     th:if="${#authentication != null and #authorization.expression('hasRole(''MODERATOR'')')}">
+    <a th:href="@{/moderator/users}">🛡️ Moderatör Paneli</a>
+</div>
+
+<h1>
+    <img th:if="${user.photoUrl}" th:src="${user.photoUrl}"
+         alt="Profil Fotoğrafı" class="profile-photo"
+         onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';"/>
+    Hoşgeldin <span th:text="${user.username}">Kullanıcı</span>!
+</h1>
+
+<form th:action="@{/profile}" th:object="${user}" method="post">
+    <div>
+        <label>Fotoğraf URL:</label>
+        <input type="url" th:field="*{photoUrl}" placeholder="https://..." />
+    </div>
+    <div>
+        <label>Ad:</label>
+        <input type="text" th:field="*{firstName}" required/>
+    </div>
+    <div>
+        <label>Soyad:</label>
+        <input type="text" th:field="*{lastName}" required/>
+    </div>
+    <div>
+        <label>Biyografi:</label><br/>
+        <textarea th:field="*{bio}" rows="4" cols="50" placeholder="Hakkında bir şeyler yaz..."></textarea>
+    </div>
+    <div th:if="${user.dateOfBirth == null}">
+        <label>Doğum Tarihi:</label>
+        <input type="date" th:field="*{dateOfBirth}" required/>
+    </div>
+    <div th:if="${user.dateOfBirth != null}">
+        <p><strong>Doğum Tarihi:</strong>
+            <span th:text="${#temporals.format(user.dateOfBirth,'dd.MM.yyyy')}"></span>
+        </p>
+    </div>
+    <button type="submit">Kaydet</button>
+</form>
+
+<div th:if="${age != null}">
+    <p><strong>Yaşın:</strong> <span th:text="${age}"></span></p>
+    <p><strong>Burcun:</strong> <span th:text="${zodiac}"></span></p>
+</div>
+<hr/>
+
+<h2>Gelen Arkadaşlık İstekleri</h2>
+<ul>
+    <li th:if="${#lists.isEmpty(incomingRequests)}">Henüz gelen istek yok.</li>
+    <li th:each="req : ${incomingRequests}">
+        <span th:text="|${req.requester.username} sizi ${req.type.typeName} olarak eklemek istiyor.|"></span>
+        <form th:action="@{/profile/friends/accept}" method="post" style="display:inline">
+            <input type="hidden" name="requestId" th:value="${req.id}"/>
+            <button type="submit">Kabul Et</button>
+        </form>
+        <form th:action="@{/profile/friends/reject}" method="post" style="display:inline">
+            <input type="hidden" name="requestId" th:value="${req.id}"/>
+            <button type="submit">Reddet</button>
+        </form>
+    </li>
+</ul>
+<hr/>
+
+<h2>Gönderilen Arkadaşlık İstekleri</h2>
+<ul>
+    <li th:if="${#lists.isEmpty(outgoingRequests)}">Henüz gönderdiğiniz istek yok.</li>
+    <li th:each="req : ${outgoingRequests}">
+        <span th:text="'Beklemede: ' + req.target.username + ' (' + req.type.name + ')'">Beklemede</span>
+    </li>
+</ul>
+<hr/>
+
+<h2>Arkadaşlar</h2>
+<ul>
+    <li th:if="${#lists.isEmpty(friends)}">Henüz arkadaşın yok.</li>
+    <li th:each="f : ${friends}">
+        <img th:if="${f.photoUrl}" th:src="${f.photoUrl}" alt="Foto"
+             class="profile-photo"
+             onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';"/>
+        <span th:text="${f.username}">Kullanıcı</span>
+
+        <a th:href="@{/chat/{username}(username=${f.username})}">
+            <button type="button">Chat</button>
+        </a>
+
+        <a th:href="@{/profile/view/{username}(username=${f.username})}">
+            <button type="button">Profil</button>
+        </a>
+
+        <form th:action="@{/profile/friends/remove}" method="post" style="display:inline">
+            <input type="hidden" name="username" th:value="${f.username}" />
+            <button type="submit">Sil</button>
+        </form>
+    </li>
+</ul>
+<hr/>
+
+<h2>Yeni Arkadaş Ekle</h2>
+<form th:action="@{/profile/friends/add}" method="post">
+    <div>
+        <label>Kullanıcı Adı:</label>
+        <input type="text" name="username" placeholder="Kullanıcı adı girin" required/>
+    </div>
+    <div>
+        <label>Etiket:</label>
+        <select name="typeId" required>
+            <option value="" disabled selected>— Tip seçin —</option>
+            <option value="1">Arkadaş</option>
+            <option value="2">Dost</option>
+            <option value="3">Sevgili</option>
+            <option value="4">Flört</option>
+        </select>
+    </div>
+    <button type="submit">Arkadaşlık İsteği Gönder</button>
+</form>
+
+<p><a th:href="@{/logout}">Çıkış Yap</a></p>
+</body>
+</html>

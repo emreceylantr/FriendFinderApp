@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Mesajlar - Admin Paneli</title>
+  <meta charset="UTF-8">
+  <style>
+    table {
+      width: 80%;
+      margin: auto;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f0f0f0;
+      text-align: center;
+    }
+
+    td {
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<h2 style="text-align: center;">Tüm Mesajlar</h2>
+
+<table>
+  <thead>
+  <tr>
+    <th>Gönderen</th>
+    <th>Alıcı</th>
+    <th>İçerik</th>
+    <th>Tarih</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="msg : ${messages}">
+    <td th:text="${msg.senderUsername}"></td>
+    <td th:text="${msg.receiverUsername}"></td>
+    <td th:text="${msg.content}"></td>
+    <td th:text="${#dates.format(msg.timestamp, 'dd-MM-yyyy HH:mm')}"></td>
+  </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

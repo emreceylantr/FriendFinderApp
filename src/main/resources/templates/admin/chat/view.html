@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Sohbet</title></head>
+<body>
+<h2 th:text="'Sohbet: ' + ${userA} + ' ↔ ' + ${userB}"></h2>
+<ul>
+    <li th:each="m : ${conversation}">
+        <b th:text="${m.sender.username} + ':'"></b>
+        <span th:text="${m.content}"></span>
+    </li>
+</ul>
+<a th:href="@{/admin/user/messages/{username}(username=${userA})}">← Sohbet listesine dön</a>
+</body>
+</html>

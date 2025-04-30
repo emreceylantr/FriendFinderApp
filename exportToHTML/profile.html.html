@@ -1,0 +1,106 @@
+<html>
+<head>
+<title>profile.html</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #7a7e85;}
+.s1 { color: #bcbec4;}
+.s2 { color: #d5b778;}
+.s3 { color: #bababa;}
+.s4 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+profile.html</font>
+</center></td></tr></table>
+<pre><span class="s0">&lt;!-- src/main/resources/templates/profile.html --&gt;</span>
+<span class="s2">&lt;!DOCTYPE </span><span class="s3">html</span><span class="s2">&gt;</span>
+<span class="s2">&lt;html </span><span class="s3">xmlns:th</span><span class="s4">=&quot;http://www.thymeleaf.org&quot;</span><span class="s2">&gt;</span>
+<span class="s2">&lt;head&gt;</span>
+    <span class="s2">&lt;meta </span><span class="s3">charset</span><span class="s4">=&quot;UTF-8&quot;</span><span class="s2">&gt;</span>
+    <span class="s2">&lt;title&gt;</span><span class="s1">Profilim</span><span class="s2">&lt;/title&gt;</span>
+<span class="s2">&lt;/head&gt;</span>
+<span class="s2">&lt;body&gt;</span>
+<span class="s2">&lt;h1&gt;</span><span class="s1">Hoşgeldin </span><span class="s2">&lt;span </span><span class="s3">th:text</span><span class="s4">=&quot;${user.username}&quot;</span><span class="s2">&gt;</span><span class="s1">Kullanıcı</span><span class="s2">&lt;/span&gt;</span><span class="s1">!</span><span class="s2">&lt;/h1&gt;</span>
+
+<span class="s2">&lt;form </span><span class="s3">th:action</span><span class="s4">=&quot;@{/profile}&quot; </span><span class="s3">th:object</span><span class="s4">=&quot;${user}&quot; </span><span class="s3">method</span><span class="s4">=&quot;post&quot;</span><span class="s2">&gt;</span>
+    <span class="s2">&lt;div&gt;</span>
+        <span class="s2">&lt;label&gt;</span><span class="s1">Ad:</span><span class="s2">&lt;/label&gt;</span>
+        <span class="s2">&lt;input </span><span class="s3">type</span><span class="s4">=&quot;text&quot; </span><span class="s3">th:field</span><span class="s4">=&quot;*{firstName}&quot; </span><span class="s3">required</span><span class="s2">/&gt;</span>
+    <span class="s2">&lt;/div&gt;</span>
+    <span class="s2">&lt;div&gt;</span>
+        <span class="s2">&lt;label&gt;</span><span class="s1">Soyad:</span><span class="s2">&lt;/label&gt;</span>
+        <span class="s2">&lt;input </span><span class="s3">type</span><span class="s4">=&quot;text&quot; </span><span class="s3">th:field</span><span class="s4">=&quot;*{lastName}&quot; </span><span class="s3">required</span><span class="s2">/&gt;</span>
+    <span class="s2">&lt;/div&gt;</span>
+    <span class="s2">&lt;div </span><span class="s3">th:if</span><span class="s4">=&quot;${user.dateOfBirth == null}&quot;</span><span class="s2">&gt;</span>
+        <span class="s2">&lt;label&gt;</span><span class="s1">Doğum Tarihi:</span><span class="s2">&lt;/label&gt;</span>
+        <span class="s2">&lt;input </span><span class="s3">type</span><span class="s4">=&quot;date&quot; </span><span class="s3">th:field</span><span class="s4">=&quot;*{dateOfBirth}&quot; </span><span class="s3">required</span><span class="s2">/&gt;</span>
+    <span class="s2">&lt;/div&gt;</span>
+    <span class="s2">&lt;div </span><span class="s3">th:if</span><span class="s4">=&quot;${user.dateOfBirth != null}&quot;</span><span class="s2">&gt;</span>
+        <span class="s2">&lt;p&gt;&lt;strong&gt;</span><span class="s1">Doğum Tarihi:</span><span class="s2">&lt;/strong&gt;</span>
+            <span class="s2">&lt;span </span><span class="s3">th:text</span><span class="s4">=&quot;${#temporals.format(user.dateOfBirth,'dd.MM.yyyy')}&quot;</span><span class="s2">&gt;&lt;/span&gt;</span>
+        <span class="s2">&lt;/p&gt;</span>
+    <span class="s2">&lt;/div&gt;</span>
+    <span class="s2">&lt;button </span><span class="s3">type</span><span class="s4">=&quot;submit&quot;</span><span class="s2">&gt;</span><span class="s1">Kaydet</span><span class="s2">&lt;/button&gt;</span>
+<span class="s2">&lt;/form&gt;</span>
+
+<span class="s2">&lt;div </span><span class="s3">th:if</span><span class="s4">=&quot;${age != null}&quot;</span><span class="s2">&gt;</span>
+    <span class="s2">&lt;p&gt;&lt;strong&gt;</span><span class="s1">Yaşın:</span><span class="s2">&lt;/strong&gt; &lt;span </span><span class="s3">th:text</span><span class="s4">=&quot;${age}&quot;</span><span class="s2">&gt;&lt;/span&gt;&lt;/p&gt;</span>
+    <span class="s2">&lt;p&gt;&lt;strong&gt;</span><span class="s1">Burcun:</span><span class="s2">&lt;/strong&gt; &lt;span </span><span class="s3">th:text</span><span class="s4">=&quot;${zodiac}&quot;</span><span class="s2">&gt;&lt;/span&gt;&lt;/p&gt;</span>
+<span class="s2">&lt;/div&gt;</span>
+
+<span class="s2">&lt;hr/&gt;</span>
+
+<span class="s2">&lt;h2&gt;</span><span class="s1">Arkadaşlar</span><span class="s2">&lt;/h2&gt;</span>
+<span class="s2">&lt;ul&gt;</span>
+    <span class="s2">&lt;li </span><span class="s3">th:if</span><span class="s4">=&quot;${#lists.isEmpty(friends)}&quot;</span><span class="s2">&gt;</span><span class="s1">Henüz arkadaşın yok.</span><span class="s2">&lt;/li&gt;</span>
+    <span class="s2">&lt;li </span><span class="s3">th:each</span><span class="s4">=&quot;f : ${friends}&quot; </span><span class="s3">th:text</span><span class="s4">=&quot;${f.username} + ' (' + f.typeName + ')'&quot;</span><span class="s2">&gt;</span><span class="s1">Ali (Arkadaş)</span><span class="s2">&lt;/li&gt;</span>
+<span class="s2">&lt;/ul&gt;</span>
+
+<span class="s2">&lt;hr/&gt;</span>
+
+<span class="s2">&lt;h2&gt;</span><span class="s1">Yeni Arkadaş Ekle</span><span class="s2">&lt;/h2&gt;</span>
+<span class="s2">&lt;form </span><span class="s3">th:action</span><span class="s4">=&quot;@{/friends/add}&quot; </span><span class="s3">method</span><span class="s4">=&quot;post&quot;</span><span class="s2">&gt;</span>
+    <span class="s2">&lt;div&gt;</span>
+        <span class="s2">&lt;label&gt;</span><span class="s1">İsim ara / seç:</span><span class="s2">&lt;/label&gt;</span>
+        <span class="s2">&lt;input </span><span class="s3">type</span><span class="s4">=&quot;text&quot; </span><span class="s3">name</span><span class="s4">=&quot;username&quot; </span><span class="s3">placeholder</span><span class="s4">=&quot;Kullanıcı adı&quot; </span><span class="s3">list</span><span class="s4">=&quot;userlist&quot; </span><span class="s3">required</span><span class="s2">/&gt;</span>
+        <span class="s2">&lt;datalist </span><span class="s3">id</span><span class="s4">=&quot;userlist&quot;</span><span class="s2">&gt;</span>
+            <span class="s2">&lt;option </span><span class="s3">th:each</span><span class="s4">=&quot;u : ${allUsers}&quot; </span><span class="s3">th:value</span><span class="s4">=&quot;${u.username}&quot;</span><span class="s2">&gt;</span><span class="s1">kullanıcı</span><span class="s2">&lt;/option&gt;</span>
+        <span class="s2">&lt;/datalist&gt;</span>
+    <span class="s2">&lt;/div&gt;</span>
+    <span class="s2">&lt;div&gt;</span>
+        <span class="s2">&lt;label&gt;</span><span class="s1">Etiket:</span><span class="s2">&lt;/label&gt;</span>
+        <span class="s2">&lt;select </span><span class="s3">name</span><span class="s4">=&quot;type&quot; </span><span class="s3">required</span><span class="s2">&gt;</span>
+            <span class="s2">&lt;option </span><span class="s3">value</span><span class="s4">=&quot;&quot; </span><span class="s3">disabled selected</span><span class="s2">&gt;</span><span class="s1">Seçiniz…</span><span class="s2">&lt;/option&gt;</span>
+            <span class="s2">&lt;option </span><span class="s3">value</span><span class="s4">=&quot;Dost&quot;</span><span class="s2">&gt;</span><span class="s1">Dost</span><span class="s2">&lt;/option&gt;</span>
+            <span class="s2">&lt;option </span><span class="s3">value</span><span class="s4">=&quot;Arkadaş&quot;</span><span class="s2">&gt;</span><span class="s1">Arkadaş</span><span class="s2">&lt;/option&gt;</span>
+            <span class="s2">&lt;option </span><span class="s3">value</span><span class="s4">=&quot;Sevgili&quot;</span><span class="s2">&gt;</span><span class="s1">Sevgili</span><span class="s2">&lt;/option&gt;</span>
+            <span class="s2">&lt;option </span><span class="s3">value</span><span class="s4">=&quot;Flört&quot;</span><span class="s2">&gt;</span><span class="s1">Flört</span><span class="s2">&lt;/option&gt;</span>
+        <span class="s2">&lt;/select&gt;</span>
+    <span class="s2">&lt;/div&gt;</span>
+    <span class="s2">&lt;button </span><span class="s3">type</span><span class="s4">=&quot;submit&quot;</span><span class="s2">&gt;</span><span class="s1">Arkadaşlık İsteği Gönder</span><span class="s2">&lt;/button&gt;</span>
+<span class="s2">&lt;/form&gt;</span>
+
+<span class="s2">&lt;hr/&gt;</span>
+
+<span class="s2">&lt;h2&gt;</span><span class="s1">Gelen İstekler</span><span class="s2">&lt;/h2&gt;</span>
+<span class="s2">&lt;ul&gt;</span>
+    <span class="s2">&lt;li </span><span class="s3">th:each</span><span class="s4">=&quot;r : ${incomingRequests}&quot;</span><span class="s2">&gt;</span>
+        <span class="s2">&lt;span </span><span class="s3">th:text</span><span class="s4">=&quot;${r.requester.username}&quot;</span><span class="s2">&gt;</span><span class="s1">isim</span><span class="s2">&lt;/span&gt;</span>
+        <span class="s2">&lt;form </span><span class="s3">th:action</span><span class="s4">=&quot;@{/friends/requests/respond}&quot; </span><span class="s3">method</span><span class="s4">=&quot;post&quot; </span><span class="s3">style</span><span class="s4">=&quot;</span><span class="s3">display</span><span class="s1">:</span><span class="s4">inline&quot;</span><span class="s2">&gt;</span>
+            <span class="s2">&lt;input </span><span class="s3">type</span><span class="s4">=&quot;hidden&quot; </span><span class="s3">name</span><span class="s4">=&quot;requestId&quot; </span><span class="s3">th:value</span><span class="s4">=&quot;${r.id}&quot;</span><span class="s2">/&gt;</span>
+            <span class="s2">&lt;button </span><span class="s3">name</span><span class="s4">=&quot;accept&quot; </span><span class="s3">th:value</span><span class="s4">=&quot;true&quot; </span><span class="s3">type</span><span class="s4">=&quot;submit&quot;</span><span class="s2">&gt;</span><span class="s1">Kabul Et</span><span class="s2">&lt;/button&gt;</span>
+            <span class="s2">&lt;button </span><span class="s3">name</span><span class="s4">=&quot;accept&quot; </span><span class="s3">th:value</span><span class="s4">=&quot;false&quot; </span><span class="s3">type</span><span class="s4">=&quot;submit&quot;</span><span class="s2">&gt;</span><span class="s1">Reddet</span><span class="s2">&lt;/button&gt;</span>
+        <span class="s2">&lt;/form&gt;</span>
+    <span class="s2">&lt;/li&gt;</span>
+<span class="s2">&lt;/ul&gt;</span>
+
+<span class="s2">&lt;p&gt;&lt;a </span><span class="s3">th:href</span><span class="s4">=&quot;@{/logout}&quot;</span><span class="s2">&gt;</span><span class="s1">Çıkış Yap</span><span class="s2">&lt;/a&gt;&lt;/p&gt;</span>
+<span class="s2">&lt;/body&gt;</span>
+<span class="s2">&lt;/html&gt;</span>
+</pre>
+</body>
+</html>

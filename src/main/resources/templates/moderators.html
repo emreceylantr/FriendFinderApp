@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Moderatörler - Admin Paneli</title>
+  <meta charset="UTF-8">
+  <style>
+    ul {
+      width: 50%;
+      margin: 30px auto;
+      padding: 0;
+      list-style-type: none;
+    }
+
+    li {
+      padding: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 5px;
+      background-color: #f9f9f9;
+      text-align: center;
+    }
+
+    h2 {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Moderatör Listesi</h2>
+
+<ul>
+  <li th:each="mod : ${moderators}">
+    <span th:text="${mod.firstName} + ' ' + ${mod.lastName} + ' (' + ${mod.username} + ')'"></span>
+  </li>
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,121 @@
+// src/main/java/org/example/friendfinderapp/controller/ProfileController.java
+package org.example.friendfinderapp.controller;
+
+import org.example.friendfinderapp.model.User;
+import org.example.friendfinderapp.service.FriendService;
+import org.example.friendfinderapp.service.UserService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.List;
+
+@Controller
+@RequestMapping("/profile")
+public class ProfileController {
+
+    private final UserService userService;
+    private final FriendService friendService;
+
+    public ProfileController(UserService userService, FriendService friendService) {
+        this.userService = userService;
+        this.friendService = friendService;
+    }
+
+    @GetMapping
+    public String showProfile(Principal principal, Model model) {
+        User me = userService.findByUsername(principal.getName());
+        model.addAttribute("user", me);
+
+        if (me.getDateOfBirth() != null) {
+            int age = Period.between(me.getDateOfBirth(), LocalDate.now()).getYears();
+            model.addAttribute("age", age);
+            model.addAttribute("zodiac", calculateZodiac(me.getDateOfBirth()));
+        }
+
+        model.addAttribute("friends", me.getFriends());
+        model.addAttribute("incomingRequests", friendService.listIncomingRequests(me.getUsername()));
+        model.addAttribute("outgoingRequests", friendService.listOutgoingRequests(me.getUsername()));
+        model.addAttribute("allUsers", userService.findAllExcept(me.getId()));
+
+        return "profile";
+    }
+
+    @PostMapping
+    public String updateProfile(@ModelAttribute("user") User form, Principal principal) {
+        User me = userService.findByUsername(principal.getName());
+        me.setFirstName(form.getFirstName());
+        me.setLastName(form.getLastName());
+        me.setDateOfBirth(form.getDateOfBirth());
+        me.setPhotoUrl(form.getPhotoUrl());
+        userService.save(me);
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/friends/add")
+    public String sendRequest(@RequestParam String username,
+                              @RequestParam Long typeId,
+                              Principal principal) {
+        friendService.sendFriendRequest(principal.getName(), username, typeId);
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/friends/accept")
+    public String acceptRequest(@RequestParam Long requestId) {
+        friendService.acceptFriendRequest(requestId);
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/friends/reject")
+    public String rejectRequest(@RequestParam Long requestId) {
+        friendService.rejectFriendRequest(requestId);
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/friends/remove")
+    public String removeFriend(@RequestParam String username, Principal principal) {
+        userService.removeFriend(principal.getName(), username);
+        return "redirect:/profile";
+    }
+
+    // 👇 Yeni: Başka kullanıcıyı profil olarak görüntüleme
+    @GetMapping("/view/{username}")
+    public String viewOtherProfile(@PathVariable String username, Model model) {
+        User user = userService.findByUsername(username);
+        if (user == null) {
+            return "redirect:/profile";
+        }
+
+        model.addAttribute("user", user);
+        model.addAttribute("friends", user.getFriends());
+
+        if (user.getDateOfBirth() != null) {
+            int age = Period.between(user.getDateOfBirth(), LocalDate.now()).getYears();
+            model.addAttribute("age", age);
+            model.addAttribute("zodiac", calculateZodiac(user.getDateOfBirth()));
+        }
+
+        return "view-profile";
+    }
+
+    private String calculateZodiac(LocalDate d) {
+        int m = d.getMonthValue(), day = d.getDayOfMonth();
+        return switch (m) {
+            case 1 -> day < 20 ? "Oğlak" : "Kova";
+            case 2 -> day < 19 ? "Kova" : "Balık";
+            case 3 -> day < 21 ? "Balık" : "Koç";
+            case 4 -> day < 20 ? "Koç" : "Boğa";
+            case 5 -> day < 21 ? "Boğa" : "İkizler";
+            case 6 -> day < 21 ? "İkizler" : "Yengeç";
+            case 7 -> day < 23 ? "Yengeç" : "Aslan";
+            case 8 -> day < 23 ? "Aslan" : "Başak";
+            case 9 -> day < 23 ? "Başak" : "Terazi";
+            case 10 -> day < 23 ? "Terazi" : "Akrep";
+            case 11 -> day < 22 ? "Akrep" : "Yay";
+            default -> day < 22 ? "Yay" : "Oğlak";
+        };
+    }
+}

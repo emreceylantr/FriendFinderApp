@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Mesajlar</title></head>
+<body>
+<h2 th:text="'Kullanıcı: ' + ${username} + ' için Sohbetler'"></h2>
+<ul>
+    <li th:each="p : ${partners}">
+        <a th:href="@{/admin/user/messages/{username}/chat/{p}(username=${username}, p=${p})}">
+            <span th:text="${p}">Partner</span> ile sohbeti görüntüle
+        </a>
+    </li>
+</ul>
+<a th:href="@{/admin/users}">← Geri dön</a>
+</body>
+</html>

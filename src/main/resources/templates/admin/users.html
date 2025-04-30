@@ -1,0 +1,73 @@
+<!-- src/main/resources/templates/admin-users.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Paneli - Kullanıcılar</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px 12px;
+        }
+        th {
+            background-color: #f0f0f0;
+        }
+        td:last-child form {
+            display: inline;
+        }
+        td:last-child button {
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+<h2 style="text-align: center;">Admin Paneli - Kullanıcılar</h2>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Kullanıcı Adı</th>
+        <th>Ad</th>
+        <th>Soyad</th>
+        <th>Rol</th>
+        <th>İşlemler</th>
+    </tr>
+    <tr th:each="u : ${users}">
+        <td th:text="${u.id}"></td>
+        <td th:text="${u.username}"></td>
+        <td th:text="${u.firstName}"></td>
+        <td th:text="${u.lastName}"></td>
+        <td th:text="${u.role}"></td>
+        <td>
+            <!-- Görüntüle -->
+            <form th:action="@{'/admin/profile/' + ${u.username}}" method="get">
+                <button type="submit">Görüntüle</button>
+            </form>
+
+            <!-- Moderatör Yap -->
+            <form th:action="@{'/admin/makeModerator/' + ${u.id}}" method="post">
+                <button type="submit">Moderatör Yap</button>
+            </form>
+
+            <!-- Mesajlar -->
+            <form th:action="@{'/admin/messages/' + ${u.username}}" method="get">
+                <button type="submit">Mesajlar</button>
+            </form>
+
+            <!-- Sil -->
+            <form th:action="@{'/admin/deleteUser/' + ${u.id}}" method="post"
+                  onsubmit="return confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?');">
+                <button type="submit">Sil</button>
+            </form>
+        </td>
+    </tr>
+</table>
+<br/>
+<div style="text-align: center;">
+    <a th:href="@{/profile}">← Geri dön</a>
+</div>
+</body>
+</html>

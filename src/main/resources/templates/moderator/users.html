@@ -1,0 +1,60 @@
+<!-- src/main/resources/templates/moderator/users.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Moderatör Paneli - Kullanıcılar</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      margin: 0 auto;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px 12px;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    td:last-child button {
+      margin-left: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<h2 style="text-align: center;">Moderatör Paneli - Kullanıcılar</h2>
+
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Kullanıcı Adı</th>
+    <th>Ad</th>
+    <th>Soyad</th>
+    <th>Rol</th>
+    <th>İşlem</th>
+  </tr>
+  <tr th:each="u : ${users}">
+    <td th:text="${u.id}"></td>
+    <td th:text="${u.username}"></td>
+    <td th:text="${u.firstName}"></td>
+    <td th:text="${u.lastName}"></td>
+    <td th:text="${u.role}"></td>
+    <td>
+      <a th:href="@{/moderator/profile/{username}(username=${u.username})}">
+        <button>Görüntüle</button>
+      </a>
+      <form th:action="@{/moderator/deleteUser/{id}(id=${u.id})}" method="post" style="display:inline;">
+        <button type="submit" onclick="return confirm('Kullanıcıyı silmek istediğinize emin misiniz?')">Sil</button>
+      </form>
+    </td>
+  </tr>
+</table>
+
+<br>
+<div style="text-align: center;">
+  <a th:href="@{/profile}">← Geri Dön</a>
+</div>
+
+</body>
+</html>

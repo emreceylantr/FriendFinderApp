@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="'Sohbet — ' + ${other.username}">Sohbet</title>
+  <style>
+    #chat-box { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; }
+    #chat-box ul { list-style: none; padding: 0; }
+    #chat-box li { margin-bottom: 10px; display: flex; align-items: center; }
+    .from-me { justify-content: flex-end; color: blue; }
+    .from-other { justify-content: flex-start; color: green; }
+    .chat-photo {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 8px;
+    }
+    .msg-text {
+      max-width: 60%;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+<h1 th:text="'Sohbet: ' + ${other.username}">Sohbet</h1>
+
+<div id="chat-box">
+  <ul>
+    <li th:each="msg : ${history}"
+        th:classappend="${msg.sender.username == me.username} ? 'from-me' : 'from-other'">
+
+      <img th:src="${msg.sender.photoUrl != null} ? ${msg.sender.photoUrl} : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'"
+           alt="Foto" class="chat-photo" />
+
+      <div class="msg-text">
+        <span th:text="${msg.sender.username + ': ' + msg.content}">Mesaj</span><br/>
+        <small th:text="${#temporals.format(msg.sentAt, 'HH:mm')}">zaman</small>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<form th:action="@{/chat/{username}(username=${other.username})}" method="post">
+  <input type="text" name="content" placeholder="Mesajınızı yazın…" required/>
+  <button type="submit">Gönder</button>
+</form>
+
+<p><a th:href="@{/profile}">← Profiline Dön</a></p>
+</body>
+</html>

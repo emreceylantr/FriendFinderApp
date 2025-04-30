@@ -1,0 +1,31 @@
+<!-- src/main/resources/templates/login.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Giriş Yap</title>
+</head>
+<body>
+<h1>Giriş Yap</h1>
+
+<!-- Hata varsa göster -->
+<div th:if="${error}" style="color:red">
+    Geçersiz kullanıcı adı veya şifre
+</div>
+
+<!-- Spring Security loginProcessingUrl("/login") olduğu için action da /login olmalı -->
+<form th:action="@{/login}" method="post">
+    <div>
+        <label for="username">Kullanıcı Adı:</label>
+        <input type="text" id="username" name="username" required/>
+    </div>
+    <div>
+        <label for="password">Şifre:</label>
+        <input type="password" id="password" name="password" required/>
+    </div>
+    <button type="submit">Giriş Yap</button>
+</form>
+
+<p><a th:href="@{/register}">Üye Ol</a></p>
+</body>
+</html>

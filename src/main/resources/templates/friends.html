@@ -1,0 +1,64 @@
+<!-- src/main/resources/templates/friends.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Arkadaşların</title>
+</head>
+<body>
+<h1>Merhaba <span th:text="${#authentication.name}"></span>, arkadaşların:</h1>
+
+<!-- Kabul edilmiş arkadaşlar -->
+<ul>
+    <li th:each="f : ${friends}">
+        <span th:text="${f.username}"></span>
+        <!-- Tip değiştirme formu -->
+        <form th:action="@{/friends/tag}" method="post" style="display:inline">
+            <input type="hidden" name="friendId" th:value="${f.id}" />
+            <select name="typeId">
+                <option th:each="t : ${friendTypes}"
+                        th:value="${t.id}"
+                        th:text="${t.typeName}"
+                        th:selected="${f.typeId == t.id}">
+                </option>
+            </select>
+            <button type="submit">Güncelle</button>
+        </form>
+    </li>
+</ul>
+
+<!-- Gelen istekler -->
+<h2>Gelen İstekler</h2>
+<ul>
+    <li th:each="r : ${requests}">
+        <span th:text="${r.requester.username}"></span>
+        <form th:action="@{/friends/requests/respond}" method="post" style="display:inline">
+            <input type="hidden" name="requestId" th:value="${r.id}" />
+            <button name="accept" th:value="true">Kabul Et</button>
+            <button name="accept" th:value="false">Reddet</button>
+        </form>
+    </li>
+</ul>
+
+<!-- Yeni istek gönder -->
+<h2>Yeni Arkadaş Ekle</h2>
+<ul>
+    <li th:each="u : ${allUsers}">
+        <span th:text="${u.username}"></span>
+        <form th:action="@{/friends/add}" method="post" style="display:inline">
+            <input type="hidden" name="username" th:value="${u.username}" />
+            Etiket:
+            <select name="typeId">
+                <option th:each="t : ${friendTypes}"
+                        th:value="${t.id}"
+                        th:text="${t.typeName}">
+                </option>
+            </select>
+            <button type="submit">Arkadaşlık İsteği Gönder</button>
+        </form>
+    </li>
+</ul>
+
+<p><a th:href="@{/logout}">Çıkış Yap</a></p>
+</body>
+</html>

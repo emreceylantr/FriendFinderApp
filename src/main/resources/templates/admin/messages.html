@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Sohbetler</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      margin: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .conversation {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .conversation h2 {
+      font-size: 18px;
+      color: #007bff;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 8px;
+    }
+
+    .message-wrapper {
+      display: flex;
+      margin-bottom: 10px;
+      clear: both;
+    }
+
+    .chat-message {
+      max-width: 60%;
+      padding: 10px 15px;
+      border-radius: 15px;
+      position: relative;
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
+
+    .sender {
+      background-color: #d4edda;
+      margin-left: auto;
+      text-align: left;
+    }
+
+    .receiver {
+      background-color: #e3e3ff;
+      margin-right: auto;
+      text-align: left;
+    }
+
+    .timestamp {
+      font-size: 11px;
+      color: #666;
+      margin-top: 5px;
+      text-align: right;
+    }
+
+    .back {
+      display: block;
+      margin-top: 20px;
+      text-align: center;
+      font-weight: bold;
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .back:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Kullanıcının Sohbetleri: <span th:text="${username}"></span></h1>
+
+<div th:each="entry : ${conversations}" class="conversation">
+  <h2>Kullanıcı: <span th:text="${entry.key}"></span></h2>
+
+  <div th:each="m : ${entry.value}" class="message-wrapper">
+    <div th:class="'chat-message ' + (${m.sender.username} == ${username} ? 'sender' : 'receiver')">
+      <div th:text="${m.content}">Mesaj içeriği</div>
+      <div class="timestamp" th:text="${#temporals.format(m.sentAt, 'dd.MM.yyyy HH:mm')}">Tarih</div>
+    </div>
+  </div>
+</div>
+
+<a th:href="@{/admin/users}" class="back">← Kullanıcı listesine dön</a>
+
+</body>
+</html>

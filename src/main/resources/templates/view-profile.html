@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${user.username} + ' Profili'">Profil</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .profile-card {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 14px rgba(0, 0, 0, 0.08);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ddd;
+        }
+
+        .header-info h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #2c3e50;
+        }
+
+        .info-list {
+            margin-top: 10px;
+        }
+
+        .info-list p {
+            margin: 5px 0;
+        }
+
+        .info-list strong {
+            color: #34495e;
+        }
+
+        .chat-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .chat-btn i {
+            margin-right: 8px;
+        }
+
+        .friends-section {
+            margin-top: 30px;
+        }
+
+        .friends-section h3 {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .friends-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .friends-section li {
+            padding: 6px 0;
+        }
+
+        .back-link {
+            margin-top: 20px;
+            display: inline-block;
+            text-decoration: none;
+            color: #8e44ad;
+        }
+    </style>
+</head>
+<body>
+
+<div class="profile-card">
+    <div class="header">
+        <img th:src="${user.photoUrl}" alt="Fotoğraf"
+             onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'"/>
+        <div class="header-info">
+            <h2 th:text="${user.username} + ' Profili'">Profil</h2>
+            <div class="info-list">
+                <p><strong>Ad:</strong> <span th:text="${user.firstName}">Ad</span></p>
+                <p><strong>Soyad:</strong> <span th:text="${user.lastName}">Soyad</span></p>
+                <p><strong>Biyografi:</strong> <span th:text="${user.bio}">Yok</span></p>
+                <p th:if="${user.dateOfBirth != null}"><strong>Doğum Tarihi:</strong> <span th:text="${#temporals.format(user.dateOfBirth, 'dd.MM.yyyy')}"></span></p>
+                <p><strong>Yaş:</strong> <span th:text="${age != null ? age : 'Hesaplanamadı'}">0</span></p>
+                <p><strong>Burç:</strong> <span th:text="${zodiac != null ? zodiac : 'Bilinmiyor'}">Burç</span></p>
+                <a class="chat-btn" th:href="@{/chat/{username}(username=${user.username})}"><i class="fas fa-comments"></i> Chat Başlat</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="friends-section">
+        <h3>Arkadaşları</h3>
+        <ul>
+            <li th:if="${#lists.isEmpty(user.friends)}">Bu kullanıcının hiç arkadaşı yok.</li>
+            <li th:each="friend : ${user.friends}" th:text="${friend.username}"></li>
+        </ul>
+    </div>
+
+    <div>
+        <!-- Dinamik geri dönüş: Eğer kullanıcı admin değilse /profile sayfasına yönlendirme -->
+        <a class="back-link"
+           th:href="${#authorization.expression('hasRole(''ADMIN'')')} ? @{/admin/users} : @{/profile}">
+            ← Geri Dön
+        </a>
+    </div>
+</div>
+
+</body>
+</html>
