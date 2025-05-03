@@ -1,31 +1,132 @@
-<!-- src/main/resources/templates/login.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Giriş Yap</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-image: url('https://i.postimg.cc/3wFwCx4T/Whats-App-Image-2025-05-02-at-02-54-41.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            background-color: rgba(44, 44, 44, 0.85);
+            color: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            width: 320px;
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .login-container label {
+            display: block;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background-color: #1e1e1e;
+            color: #fff;
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .login-container input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 8px #4CAF50;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 25px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .login-container button:hover {
+            transform: scale(1.05);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: #00aced;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: #ff5c5c;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-<h1>Giriş Yap</h1>
+<div class="login-container">
+    <h2>Giriş Yap</h2>
 
-<!-- Hata varsa göster -->
-<div th:if="${error}" style="color:red">
-    Geçersiz kullanıcı adı veya şifre
-</div>
+    <!-- Hata varsa göster -->
+    <div th:if="${error}" class="error-message">
+        Geçersiz kullanıcı adı veya şifre
+    </div>
 
-<!-- Spring Security loginProcessingUrl("/login") olduğu için action da /login olmalı -->
-<form th:action="@{/login}" method="post">
-    <div>
+    <form th:action="@{/login}" method="post">
         <label for="username">Kullanıcı Adı:</label>
-        <input type="text" id="username" name="username" required/>
-    </div>
-    <div>
-        <label for="password">Şifre:</label>
-        <input type="password" id="password" name="password" required/>
-    </div>
-    <button type="submit">Giriş Yap</button>
-</form>
+        <input type="text" id="username" name="username" required>
 
-<p><a th:href="@{/register}">Üye Ol</a></p>
+        <label for="password">Şifre:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Giriş</button>
+    </form>
+
+    <div class="register-link">
+        <p>Hesabınız yok mu? <a th:href="@{/register}">Kayıt Ol</a></p>
+    </div>
+</div>
 </body>
 </html>

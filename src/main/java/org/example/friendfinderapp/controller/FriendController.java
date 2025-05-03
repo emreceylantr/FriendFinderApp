@@ -1,8 +1,9 @@
-// src/main/java/org/example/friendfinderapp/controller/FriendController.java
 package org.example.friendfinderapp.controller;
 
 import org.example.friendfinderapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,9 +24,11 @@ public class FriendController {
     public String sendFriendRequest(
             @RequestParam("username") String targetUsername,
             @RequestParam("typeId") Long typeId,
+            @AuthenticationPrincipal UserDetails currentUser,
             RedirectAttributes redirectAttrs) {
-        // TODO: Oturum açmış kullanıcı adını SecurityContext ya da Session'dan alın
-        String requesterUsername = "emre";
+
+        String requesterUsername = currentUser.getUsername(); // Oturumdaki kullanıcı adı
+
         try {
             userService.sendFriendRequest(requesterUsername, targetUsername, typeId);
             redirectAttrs.addFlashAttribute("msg", "İstek gönderildi: " + targetUsername);
@@ -41,6 +44,7 @@ public class FriendController {
             @RequestParam("requestId") Long requestId,
             @RequestParam("accept") boolean accept,
             RedirectAttributes redirectAttrs) {
+
         try {
             if (accept) {
                 userService.acceptFriendRequest(requestId);

@@ -30,7 +30,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role = Role.USER; // Varsayılan rol
+    private Role role = Role.USER;
 
     @Column(name = "photo_url", length = 2000)
     private String photoUrl;
@@ -53,6 +53,12 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "blocked_id")
     )
     private Set<User> blockedUsers = new HashSet<>();
+
+    // ✅ Galeri fotoğrafları alanı
+    @ElementCollection
+    @CollectionTable(name = "user_gallery", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "photo_url", length = 2000)
+    private Set<String> galleryPhotos = new HashSet<>();
 
     // --- Getter / Setter ---
 
@@ -87,4 +93,7 @@ public class User {
 
     public Set<User> getBlockedUsers() { return blockedUsers; }
     public void setBlockedUsers(Set<User> blockedUsers) { this.blockedUsers = blockedUsers; }
+
+    public Set<String> getGalleryPhotos() { return galleryPhotos; }
+    public void setGalleryPhotos(Set<String> galleryPhotos) { this.galleryPhotos = galleryPhotos; }
 }

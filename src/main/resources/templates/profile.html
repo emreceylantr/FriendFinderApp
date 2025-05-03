@@ -35,6 +35,14 @@
             object-fit: cover;
             border: 3px solid #2980b9;
         }
+        .profile-info-text {
+            display: flex;
+            flex-direction: column;
+        }
+        .profile-info-text .sub-info {
+            font-size: 0.9em;
+            color: #555;
+        }
         .admin-button {
             display: flex;
             justify-content: flex-end;
@@ -46,8 +54,12 @@
             padding: 8px 16px;
             text-decoration: none;
             border-radius: 5px;
+            transition: all 0.3s ease;
         }
-        .admin-button a:hover { background-color: #a93226; }
+        .admin-button a:hover {
+            background-color: #a93226;
+            transform: scale(1.05);
+        }
         form input, form textarea, form select, form button {
             display: block;
             width: 100%;
@@ -60,7 +72,7 @@
         textarea { resize: vertical; }
         ul { padding-left: 0; list-style: none; }
         li { margin-bottom: 20px; }
-        button[type="submit"], button[type="button"] {
+        button[type="submit"], button[type="button"], .toggle-edit-btn {
             width: auto;
             background-color: #3498db;
             color: white;
@@ -68,8 +80,12 @@
             cursor: pointer;
             padding: 8px 12px;
             border-radius: 5px;
+            transition: all 0.3s ease;
         }
-        button:hover { background-color: #2980b9; }
+        button:hover, .toggle-edit-btn:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+        }
         .friend-actions button {
             margin-right: 5px;
             margin-top: 5px;
@@ -88,6 +104,11 @@
             border-radius: 8px;
             padding: 10px;
             text-align: center;
+            transition: 0.3s ease;
+        }
+        .friend-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         .friend-card img {
             width: 60px;
@@ -96,82 +117,171 @@
             object-fit: cover;
             margin-bottom: 10px;
         }
+        .section img {
+            transition: transform 0.3s ease-in-out;
+        }
+        .section img:hover {
+            transform: scale(1.05);
+        }
+        h2::before {
+            content: "✨ ";
+            color: #f39c12;
+        }
+        details summary {
+            background-color: #f9eaea;
+            padding: 10px;
+            border-radius: 5px;
+            user-select: none;
+        }
+        details[open] summary {
+            background-color: #f1c40f;
+            color: #fff;
+        }
+        a[href$="logout"] {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #e67e22;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        a[href$="logout"]:hover {
+            background-color: #d35400;
+            transform: scale(1.05);
+        }
+        @media (max-width: 600px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .friends-grid {
+                flex-direction: column;
+            }
+            .admin-button {
+                justify-content: center;
+            }
+        }
+        #edit-section { display: none; }
     </style>
+    <script>
+        function toggleEditSection() {
+            const section = document.getElementById('edit-section');
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
 </head>
 <body>
 <div class="container">
-
-    <div class="admin-button"
-         th:if="${#authentication != null and #authorization.expression('hasRole(''ADMIN'')')}">
+    <!-- Bu div içeriği profil düzenleme formunu kapsayacak şekilde otomatik olarak görünür/gizlenir -->
+    <div class="admin-button" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
         <a th:href="@{/admin/users}">🔧 Admin Paneli</a>
     </div>
-
-    <div class="admin-button"
-         th:if="${#authentication != null and #authorization.expression('hasRole(''MODERATOR'')')}">
-        <a th:href="@{/moderator/users}">🛡️ Moderatör Paneli</a>
+    <div class="admin-button" th:if="${#authorization.expression('hasRole(''MODERATOR'')')}">
+        <a th:href="@{/moderator/users}">🛡 Moderatör Paneli</a>
     </div>
 
     <div class="profile-header">
-        <img th:if="${user.photoUrl}" th:src="${user.photoUrl}"
-             alt="Profil Fotoğrafı" class="profile-photo"
+        <img th:if="${user.photoUrl}" th:src="${user.photoUrl}" alt="Profil Fotoğrafı" class="profile-photo"
              onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';"/>
-        <h1>Hoşgeldin <span th:text="${user.username}">Kullanıcı</span>!</h1>
+        <div class="profile-info-text">
+            <h1>Hoşgeldin <span th:text="${user.username}">Kullanıcı</span>!</h1>
+            <div class="sub-info">
+                <div><span th:text="${user.firstName + ' ' + user.lastName}">Ad Soyad</span></div>
+                <div><span th:text="${user.bio}">Biyografi bilgisi burada yer alır.</span></div>
+                <div th:if="${age != null}"><strong>Yaş:</strong> <span th:text="${age}">-</span></div>
+                <div th:if="${zodiac != null}"><strong>Burç:</strong> <span th:text="${zodiac}">-</span></div>
+            </div>
+
+        </div>
     </div>
 
-    <form th:action="@{/profile}" th:object="${user}" method="post">
-        <label>Fotoğraf URL:</label>
-        <input type="url" th:field="*{photoUrl}" placeholder="https://..." />
-        <label>Ad:</label>
-        <input type="text" th:field="*{firstName}" required/>
-        <label>Soyad:</label>
-        <input type="text" th:field="*{lastName}" required/>
-        <label>Biyografi:</label>
-        <textarea th:field="*{bio}" rows="4" placeholder="Hakkında bir şeyler yaz..."></textarea>
-        <div th:if="${user.dateOfBirth == null}">
-            <label>Doğum Tarihi:</label>
-            <input type="date" th:field="*{dateOfBirth}" required/>
+    <div class="section">
+        <h2>Galeri Fotoğrafları</h2>
+        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <div th:each="photo : ${gallery}" style="text-align: center;">
+                <img th:src="${photo}" alt="Galeri Foto" style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px;"
+                     onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'" />
+                <form th:action="@{/profile/gallery/delete}" method="post" style="margin-top: 5px;">
+                    <input type="hidden" name="url" th:value="${photo}" />
+                    <button type="submit" style="background-color: #e74c3c; color: white; padding: 4px 10px; border: none; border-radius: 4px;">Sil</button>
+                </form>
+            </div>
         </div>
-        <div th:if="${user.dateOfBirth != null}">
-            <p><strong>Doğum Tarihi:</strong>
-                <span th:text="${#temporals.format(user.dateOfBirth,'dd.MM.yyyy')}"></span>
-            </p>
+    </div>
+
+    <button class="toggle-edit-btn" onclick="toggleEditSection()">DÜZENLE</button>
+    <div id="edit-section">
+        <!-- Galeriye Yeni Fotoğraf Ekle -->
+        <div class="section">
+            <h2>Yeni Galeri Fotoğrafı Ekle</h2>
+            <form th:action="@{/profile/gallery/add}" method="post">
+                <label>Fotoğraf URL:</label>
+                <input type="url" name="url" placeholder="https://..." required />
+                <button type="submit">Fotoğrafı Ekle</button>
+            </form>
         </div>
-        <button type="submit">Kaydet</button>
+
+        <form th:action="@{/profile}" th:object="${user}" method="post">
+            <label>Fotoğraf URL:</label>
+            <input type="url" th:field="*{photoUrl}" placeholder="https://..." />
+            <label>Ad:</label>
+            <input type="text" th:field="*{firstName}" required/>
+            <label>Soyad:</label>
+            <input type="text" th:field="*{lastName}" required/>
+            <label>Biyografi:</label>
+            <textarea th:field="*{bio}" rows="4" placeholder="Hakkında bir şeyler yaz..."></textarea>
+
+            <div th:if="${user.dateOfBirth == null}">
+                <label>Doğum Tarihi:</label>
+                <input type="date" th:field="*{dateOfBirth}" required/>
+            </div>
+            <div th:if="${user.dateOfBirth != null}">
+                <p><strong>Doğum Tarihi:</strong>
+                    <span th:text="${#temporals.format(user.dateOfBirth,'dd.MM.yyyy')}"></span>
+                </p>
+            </div>
+            <button type="submit">Kaydet</button>
+    </div>
     </form>
 
-    <div th:if="${age != null}">
-        <p><strong>Yaşın:</strong> <span th:text="${age}"></span></p>
-        <p><strong>Burcun:</strong> <span th:text="${zodiac}"></span></p>
+    <!-- Gelen Arkadaşlık İstekleri -->
+    <!-- Arkadaşlık İstekleri Bölümü -->
+    <div class="section" style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <!-- Gelen İstekler -->
+        <div style="flex: 1 1 48%; background-color: #fefefe; padding: 20px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+            <h2 style="font-size: 1.2rem;">Gelen Arkadaşlık İstekleri</h2>
+            <ul style="margin-top: 10px;">
+                <li th:if="${#lists.isEmpty(incomingRequests)}">Henüz gelen istek yok.</li>
+                <li th:each="req : ${incomingRequests}" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background-color: #f8f9fa; padding: 10px; border-radius: 8px;">
+                    <span th:text="|${req.requester.username} sizi ${req.type.name} olarak eklemek istiyor.|"></span>
+                    <div style="display: flex; gap: 6px;">
+                        <form th:action="@{/profile/friends/accept}" method="post">
+                            <input type="hidden" name="requestId" th:value="${req.id}"/>
+                            <button type="submit" title="Kabul Et" style="background-color: #2ecc71; color: white; border: none; border-radius: 5px; padding: 6px 10px; font-size: 16px;">✔</button>
+                        </form>
+                        <form th:action="@{/profile/friends/reject}" method="post">
+                            <input type="hidden" name="requestId" th:value="${req.id}"/>
+                            <button type="submit" title="Reddet" style="background-color: #e74c3c; color: white; border: none; border-radius: 5px; padding: 6px 10px; font-size: 16px;">✖</button>
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Gönderilen İstekler -->
+        <div style="flex: 1 1 48%; background-color: #fefefe; padding: 20px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+            <h2 style="font-size: 1.2rem;">Gönderilen Arkadaşlık İstekleri</h2>
+            <ul style="margin-top: 10px;">
+                <li th:if="${#lists.isEmpty(outgoingRequests)}">Henüz gönderdiğiniz istek yok.</li>
+                <li th:each="req : ${outgoingRequests}">
+                    <span th:text="|Beklemede: ${req.target.username} (${req.type.name})|">Beklemede</span>
+                </li>
+            </ul>
+        </div>
     </div>
 
-    <div class="section">
-        <h2>Gelen Arkadaşlık İstekleri</h2>
-        <ul>
-            <li th:if="${#lists.isEmpty(incomingRequests)}">Henüz gelen istek yok.</li>
-            <li th:each="req : ${incomingRequests}">
-                <span th:text="|${req.requester.username} sizi ${req.type.typeName} olarak eklemek istiyor.|"></span>
-                <form th:action="@{/profile/friends/accept}" method="post" style="display:inline">
-                    <input type="hidden" name="requestId" th:value="${req.id}"/>
-                    <button type="submit">Kabul Et</button>
-                </form>
-                <form th:action="@{/profile/friends/reject}" method="post" style="display:inline">
-                    <input type="hidden" name="requestId" th:value="${req.id}"/>
-                    <button type="submit">Reddet</button>
-                </form>
-            </li>
-        </ul>
-    </div>
-
-    <div class="section">
-        <h2>Gönderilen Arkadaşlık İstekleri</h2>
-        <ul>
-            <li th:if="${#lists.isEmpty(outgoingRequests)}">Henüz gönderdiğiniz istek yok.</li>
-            <li th:each="req : ${outgoingRequests}">
-                <span th:text="'Beklemede: ' + req.target.username + ' (' + req.type.name + ')'">Beklemede</span>
-            </li>
-        </ul>
-    </div>
-
+    <!-- Arkadaş Listesi -->
     <div class="section">
         <h2>Arkadaşlar</h2>
         <div class="friends-grid">
@@ -186,7 +296,7 @@
                     <a th:href="@{/profile/view/{username}(username=${f.username})}">
                         <button type="button">Profil</button>
                     </a>
-                    <form th:action="@{/profile/friends/remove}" method="post" style="display:inline">
+                    <form th:action="@{/profile/friends/remove}" method="post">
                         <input type="hidden" name="username" th:value="${f.username}" />
                         <button type="submit">Sil</button>
                     </form>
@@ -195,6 +305,7 @@
         </div>
     </div>
 
+    <!-- Yeni Arkadaş Ekle -->
     <div class="section">
         <h2>Yeni Arkadaş Ekle</h2>
         <form th:action="@{/profile/friends/add}" method="post">
@@ -203,16 +314,13 @@
             <label>Etiket:</label>
             <select name="typeId" required>
                 <option value="" disabled selected>— Tip seçin —</option>
-                <option value="1">Arkadaş</option>
-                <option value="2">Dost</option>
-                <option value="3">Sevgili</option>
-                <option value="4">Flört</option>
+                <option th:each="type : ${friendTypes}" th:value="${type.id}" th:text="${type.name}">Etiket</option>
             </select>
             <button type="submit">Arkadaşlık İsteği Gönder</button>
         </form>
     </div>
 
-    <!-- ✅ Engellenen Kullanıcılar -->
+    <!-- Engellenen Kullanıcılar -->
     <div class="section">
         <details>
             <summary style="cursor:pointer; font-weight:bold; color:#e74c3c;">🚫 Engellenen Kullanıcılar</summary>
@@ -232,6 +340,7 @@
     <p style="text-align:center; margin-top:30px;">
         <a th:href="@{/logout}">🔓 Çıkış Yap</a>
     </p>
+
 </div>
 </body>
 </html>

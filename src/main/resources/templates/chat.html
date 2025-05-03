@@ -8,17 +8,20 @@
 
     body {
       font-family: Arial, sans-serif;
-      background-color: #ece5dd;
+      background-color: #f8f5f2;
       margin: 0;
       padding: 0;
       overflow-x: hidden;
     }
 
     h1 {
-      background-color: #075e54;
+      background: linear-gradient(45deg, #ff5f6d, #ff9966, #f7ebaf);
       color: white;
       padding: 15px 20px;
       margin: 0;
+      text-align: center;
+      font-size: 30px;
+      border-bottom: 2px solid #ccc;
     }
 
     #chat-box {
@@ -28,6 +31,10 @@
       display: flex;
       flex-direction: column;
       gap: 15px;
+      background: #fff;
+      border-radius: 8px;
+      margin: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     .chat-message {
@@ -38,18 +45,18 @@
       flex-direction: column;
       word-break: break-word;
       position: relative;
-      padding-bottom: 25px;
+      animation: fadeIn 1s forwards, slideIn 0.5s ease-out;
     }
 
     .from-me {
       align-self: flex-end;
-      background-color: #dcf8c6;
+      background: linear-gradient(45deg, #ffc3a0, #ffafbd);
       margin-right: 40px;
     }
 
     .from-other {
       align-self: flex-start;
-      background-color: #ffffff;
+      background: linear-gradient(45deg, #f7d1d1, #ffe4e1);
       margin-left: 40px;
     }
 
@@ -96,6 +103,7 @@
       border-top: 1px solid #ccc;
       align-items: center;
       gap: 10px;
+      border-radius: 8px;
     }
 
     #emoji-btn {
@@ -107,6 +115,8 @@
 
     #emoji-panel {
       display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
       position: absolute;
       bottom: 50px;
       left: 10px;
@@ -121,6 +131,11 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
 
+    #emoji-panel.show {
+      display: flex;
+      opacity: 1;
+    }
+
     #emoji-panel span {
       cursor: pointer;
       font-size: 20px;
@@ -133,29 +148,55 @@
       border: 1px solid #ccc;
       border-radius: 20px;
       outline: none;
+      transition: border 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #ff5f6d;
     }
 
     button[type="submit"] {
       padding: 10px 15px;
-      background-color: #075e54;
+      background-color: #ff5f6d;
       color: white;
       border: none;
       border-radius: 20px;
       cursor: pointer;
+      transition: background-color 0.3s;
     }
 
-    a {
-      display: block;
-      text-align: center;
-      padding: 10px;
-      text-decoration: none;
-      color: #075e54;
-      font-weight: bold;
+    button[type="submit"]:hover {
+      background-color: #ffc3a0;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      color: white;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(100%); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
   </style>
 </head>
 <body>
-<h1 th:text="'Sohbet: ' + ${other.username}">Sohbet</h1>
+
+<button class="back-btn" onclick="window.history.back();">←</button>
+
+<h1 th:text="${other.username}">Kullanıcı Adı</h1>
 
 <div id="chat-box">
   <div th:each="msg : ${history}"
@@ -170,10 +211,7 @@
     </div>
   </div>
 
-  <!-- 👇 Canlı yazı önizlemesi -->
-  <div id="typingPreview" class="typing-preview" style="display: none;">
-    Yazıyor...
-  </div>
+  <div id="typingPreview" class="typing-preview" style="display: none;">Yazıyor...</div>
 </div>
 
 <form th:action="@{/chat/{username}(username=${other.username})}" method="post">
@@ -181,15 +219,12 @@
 
   <div id="emoji-panel">
     <span>😀</span><span>😂</span><span>😍</span><span>😎</span><span>😭</span>
-    <span>😡</span><span>👍</span><span>🙏</span><span>🎉</span><span>❤️</span>
-    <span>🥰</span><span>😅</span><span>🤔</span><span>😇</span><span>🤷</span>
+    <span>😡</span><span>👍</span><span>🙏</span><span>🎉</span><span>❤</span>
   </div>
 
   <input type="text" id="message-input" name="content" placeholder="Mesajınızı yazın…" required/>
   <button type="submit">Gönder</button>
 </form>
-
-<a th:href="@{/profile}">← Profiline Dön</a>
 
 <script>
   const emojiBtn = document.getElementById('emoji-btn');
@@ -198,7 +233,7 @@
   const typingPreview = document.getElementById('typingPreview');
 
   emojiBtn.addEventListener('click', () => {
-    emojiPanel.style.display = emojiPanel.style.display === 'none' ? 'flex' : 'none';
+    emojiPanel.classList.toggle('show');
   });
 
   emojiPanel.addEventListener('click', (e) => {
@@ -210,24 +245,19 @@
 
   document.addEventListener('click', (e) => {
     if (!emojiPanel.contains(e.target) && e.target !== emojiBtn) {
-      emojiPanel.style.display = 'none';
+      emojiPanel.classList.remove('show');
     }
   });
 
-  // 👇 Otomatik scroll en alt mesaja
   window.addEventListener('load', function () {
     const chatBox = document.getElementById('chat-box');
     chatBox.scrollTop = chatBox.scrollHeight;
   });
 
-  // 👇 "Yazıyor..." efekti
   messageInput.addEventListener('input', () => {
-    if (messageInput.value.trim() !== '') {
-      typingPreview.style.display = 'block';
-    } else {
-      typingPreview.style.display = 'none';
-    }
+    typingPreview.style.display = messageInput.value.trim() !== '' ? 'block' : 'none';
   });
 </script>
+
 </body>
 </html>

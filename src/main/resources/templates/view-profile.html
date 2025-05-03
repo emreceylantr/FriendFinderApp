@@ -32,17 +32,28 @@
             height: 120px;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid #3498db;
+            border: 4px solid #3498db;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .header img:hover {
+            transform: scale(1.05);
         }
 
         .header-info h2 {
-            margin: 0 0 8px;
-            font-size: 26px;
+            margin: 0;
+            font-size: 24px;
             color: #2c3e50;
         }
 
+        .header-info small {
+            color: #888;
+            font-size: 15px;
+        }
+
         .info-list {
-            margin-top: 5px;
+            margin-top: 10px;
         }
 
         .info-list p {
@@ -101,22 +112,47 @@
 
         .friend-list {
             display: flex;
+            overflow-x: auto;
+            gap: 14px;
+            padding-bottom: 10px;
+        }
+
+        .friend-avatar {
+            flex: 0 0 auto;
+            width: 64px;
+            text-align: center;
+            font-size: 13px;
+            color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .friend-avatar img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid #3498db;
+            object-fit: cover;
+        }
+
+        .gallery-grid {
+            display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 15px;
+            margin-top: 10px;
         }
 
-        .friend-item {
-            background: #e1ecf4;
-            padding: 8px 14px;
-            border-radius: 30px;
-            font-size: 14px;
-            color: #1c4966;
-            font-weight: 500;
-            transition: background 0.2s ease;
+        .gallery-grid img {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            transition: transform 0.3s ease;
+            cursor: pointer;
         }
 
-        .friend-item:hover {
-            background: #d0e6f8;
+        .gallery-grid img:hover {
+            transform: scale(1.03);
         }
 
         .back-link {
@@ -132,25 +168,71 @@
             color: #6c3483;
             text-decoration: underline;
         }
+
+        /* Lightbox Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 99;
+            padding-top: 60px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.9);
+        }
+
+        .modal-content {
+            display: block;
+            margin: auto;
+            max-width: 80%;
+            max-height: 80%;
+            border-radius: 8px;
+            box-shadow: 0 0 20px black;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 30px;
+            right: 50px;
+            color: #fff;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
 <div class="profile-card">
     <div class="header">
-        <img th:src="${user.photoUrl}" alt="Fotoğraf"
+        <img th:src="${user.photoUrl}"
+             alt="Fotoğraf"
+             onclick="window.open(this.src, '_blank')"
              onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'"/>
         <div class="header-info">
-            <h2 th:text="${user.username} + ' Profili'">Profil</h2>
+            <h2 th:text="${user.firstName + ' ' + user.lastName}">Emre Ceylan</h2>
+            <small th:text="'@' + ${user.username}">@emreceylan</small>
             <div class="info-list">
-                <p><strong>Ad:</strong> <span th:text="${user.firstName}">Ad</span></p>
-                <p><strong>Soyad:</strong> <span th:text="${user.lastName}">Soyad</span></p>
                 <p><strong>Biyografi:</strong> <span th:text="${user.bio}">Yok</span></p>
                 <p th:if="${user.dateOfBirth != null}"><strong>Doğum Tarihi:</strong> <span th:text="${#temporals.format(user.dateOfBirth, 'dd.MM.yyyy')}"></span></p>
                 <p><strong>Yaş:</strong> <span th:text="${age != null ? age : 'Hesaplanamadı'}">0</span></p>
                 <p><strong>Burç:</strong> <span th:text="${zodiac != null ? zodiac : 'Bilinmiyor'}">Burç</span></p>
 
-                <a class="chat-btn" th:href="@{/chat/{username}(username=${user.username})}"><i class="fas fa-comments"></i> Chat Başlat</a>
+                <div th:if="${isFriend}">
+                    <a class="chat-btn" th:href="@{/chat/{username}(username=${user.username})}"><i class="fas fa-comments"></i> Mesaj Gönder</a>
+                </div>
+                <div th:unless="${isFriend}">
+                    <form th:action="@{/profile/friends/add}" method="post">
+                        <input type="hidden" name="username" th:value="${user.username}" />
+                        <select name="typeId" required>
+                            <option value="" disabled selected>— Tip seçin —</option>
+                            <option th:each="type : ${friendTypes}" th:value="${type.id}" th:text="${type.name}"></option>
+                        </select>
+                        <button class="chat-btn" type="submit"><i class="fas fa-user-plus"></i> Arkadaşlık İsteği Gönder</button>
+                    </form>
+                </div>
 
                 <form th:action="@{/profile/block/{username}(username=${user.username})}" method="post" style="display:inline">
                     <button class="block-btn" type="submit"><i class="fas fa-ban"></i> Engelle</button>
@@ -160,10 +242,22 @@
     </div>
 
     <div class="friends-section">
-        <h3>Arkadaşları</h3>
+        <h3>Arkadaşlar</h3>
         <div class="friend-list">
             <span th:if="${#lists.isEmpty(user.friends)}">Bu kullanıcının hiç arkadaşı yok.</span>
-            <span class="friend-item" th:each="friend : ${user.friends}" th:text="${friend.username}"></span>
+            <a class="friend-avatar" th:each="friend : ${user.friends}" th:href="@{/profile/view/{username}(username=${friend.username})}">
+                <img th:src="${friend.photoUrl}" alt="Arkadaş Foto" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'"/>
+                <div th:text="${friend.username}">kullanici</div>
+            </a>
+        </div>
+    </div>
+
+    <div class="section" th:if="${gallery != null and !gallery.isEmpty()}">
+        <h3 style="margin-top:30px; color:#2c3e50;">Galeri</h3>
+        <div class="gallery-grid">
+            <img th:each="photo : ${gallery}"
+                 th:src="${photo}"
+                 alt="Galeri Fotoğrafı"/>
         </div>
     </div>
 
@@ -174,6 +268,32 @@
         </a>
     </div>
 </div>
+
+<!-- Modal Lightbox -->
+<div id="lightboxModal" class="modal" onclick="closeModal()">
+    <span class="modal-close" onclick="closeModal()">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
+
+<script>
+    const modal = document.getElementById("lightboxModal");
+    const modalImg = document.getElementById("modalImage");
+
+    function openModal(src) {
+        modal.style.display = "block";
+        modalImg.src = src;
+    }
+
+    function closeModal() {
+        modal.style.display = "none";
+    }
+
+    document.querySelectorAll('.gallery-grid img').forEach(img => {
+        img.addEventListener('click', () => {
+            openModal(img.src);
+        });
+    });
+</script>
 
 </body>
 </html>

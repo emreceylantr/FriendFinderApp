@@ -1,4 +1,3 @@
-<!-- src/main/resources/templates/admin-users.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -6,26 +5,58 @@
     <title>Admin Paneli - Kullanıcılar</title>
     <style>
         table {
+            width: 100%;
             border-collapse: collapse;
-            margin: 0 auto;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         th, td {
-            border: 1px solid black;
-            padding: 8px 12px;
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
         }
         th {
-            background-color: #f0f0f0;
+            background-color: #f4f4f4;
+            font-weight: bold;
         }
         td:last-child form {
             display: inline;
         }
-        td:last-child button {
-            margin-left: 5px;
+        button {
+            padding: 8px 12px;
+            margin: 5px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .admin-header {
+            color: #4CAF50;
+            font-size: 24px;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-left: 20px;
+        }
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        button.delete {
+            background-color: #f44336; /* Kırmızı renk */
+        }
+        button.delete:hover {
+            background-color: #e53935; /* Koyu kırmızı */
         }
     </style>
 </head>
 <body>
-<h2 style="text-align: center;">Admin Paneli - Kullanıcılar</h2>
+<h2 class="admin-header">Admin Paneli</h2>
+<h2 style="text-align: center;">Kullanıcılar</h2>
 <table>
     <tr>
         <th>ID</th>
@@ -60,14 +91,16 @@
             <!-- Sil -->
             <form th:action="@{'/admin/deleteUser/' + ${u.id}}" method="post"
                   onsubmit="return confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?');">
-                <button type="submit">Sil</button>
+                <button class="delete" type="submit">Sil</button>
             </form>
         </td>
     </tr>
 </table>
 <br/>
-<div style="text-align: center;">
-    <a th:href="@{/profile}">← Geri dön</a>
+<div class="back-link">
+    <form th:action="@{/profile}" method="get">
+        <button type="submit">← Geri dön</button>
+    </form>
 </div>
 </body>
 </html>

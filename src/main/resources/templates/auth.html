@@ -1,9 +1,88 @@
-<!-- src/main/resources/templates/auth.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Hoşgeldin</title></head>
+<head>
+    <meta charset="UTF-8">
+    <title>Finder - Hoş Geldiniz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet"> <!-- Poppins fontu eklendi -->
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #d50000, #ff4081); /* Bordo-kırmızı-pembe geçişi */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: white;
+        }
+
+        .main-container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.9); /* Hafif şeffaf beyaz */
+            padding: 60px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 700px; /* Kutu boyutunu büyüttük */
+        }
+
+        h1 {
+            font-family: 'Poppins', sans-serif; /* Finder yazısına Poppins fontu eklendi */
+            font-size: 80px; /* Finder yazısını daha büyük yaptık */
+            text-transform: capitalize;
+            margin-bottom: 20px;
+            color: #ff4081; /* Finder yazısına pembe renk ekledik */
+        }
+
+        h2 {
+            font-size: 20px; /* Hoş Geldiniz yazısını daha küçük yaptık */
+            margin-bottom: 30px;
+            color: #f5abc4; /* Hoş Geldiniz yazısına #f5abc4 rengi verildi */
+        }
+
+        .title {
+            font-size: 24px;
+            color: #4CAF50;
+            margin-bottom: 30px;
+        }
+
+        .button-group {
+            margin-top: 40px;
+        }
+
+        a.button {
+            display: inline-block;
+            padding: 12px 25px;
+            margin: 0 15px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            font-size: 16px;
+        }
+
+        a.button:hover {
+            background-color: #45a049;
+            transform: scale(1.1);
+        }
+
+        a.button:active {
+            transform: scale(1);
+        }
+
+    </style>
+</head>
 <body>
-<h1>Arkadaş Bulma Uygulamasına Hoşgeldiniz!</h1>
-<p><a th:href="@{/register}">Üye Ol</a> | <a th:href="@{/login}">Giriş Yap</a></p>
+<div class="main-container">
+    <h1>Finder</h1> <!-- Finder yazısını burada Poppins fontu ile daha büyük yapmak -->
+    <h2>Hoş Geldiniz!</h2> <!-- Hoş Geldiniz yazısı #f5abc4 renginde -->
+    <p class="title">Sosyal bağlantılarınızı kolayca keşfedin.</p>
+    <div class="button-group">
+        <a th:href="@{/register}" class="button">Üye Ol</a>
+        <a th:href="@{/login}" class="button">Giriş Yap</a>
+    </div>
+</div>
 </body>
 </html>

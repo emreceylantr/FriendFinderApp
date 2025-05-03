@@ -1,4 +1,3 @@
-// src/main/java/org/example/friendfinderapp/service/FriendService.java
 package org.example.friendfinderapp.service;
 
 import org.example.friendfinderapp.model.FriendRequest;
@@ -50,12 +49,12 @@ public class FriendService {
 
     /** Gelen, henüz cevaplanmamış istekleri listeler */
     public List<FriendRequest> listIncomingRequests(String username) {
-        return reqRepo.findByTarget_UsernameAndAcceptedFalse(username);
+        return reqRepo.findIncomingWithDetails(username);
     }
 
     /** Gönderilen, henüz cevaplanmamış istekleri listeler */
     public List<FriendRequest> listOutgoingRequests(String username) {
-        return reqRepo.findByRequester_UsernameAndAcceptedFalse(username);
+        return reqRepo.findOutgoingWithDetails(username);
     }
 
     /** İsteği kabul eder, iki kullanıcıyı arkadaş olarak birbirine ekler */

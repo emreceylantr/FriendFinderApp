@@ -1,4 +1,3 @@
-// src/main/java/org/example/friendfinderapp/controller/ProfileController.java
 package org.example.friendfinderapp.controller;
 
 import org.example.friendfinderapp.model.User;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.List;
 
 @Controller
 @RequestMapping("/profile")
@@ -40,6 +38,8 @@ public class ProfileController {
         model.addAttribute("incomingRequests", friendService.listIncomingRequests(me.getUsername()));
         model.addAttribute("outgoingRequests", friendService.listOutgoingRequests(me.getUsername()));
         model.addAttribute("allUsers", userService.findAllExcept(me.getId()));
+        model.addAttribute("friendTypes", userService.listFriendTypes(me.getId()));
+        model.addAttribute("gallery", me.getGalleryPhotos());
 
         return "profile";
     }
@@ -99,21 +99,47 @@ public class ProfileController {
         return "redirect:/profile";
     }
 
+    @PostMapping("/gallery/add")
+    public String addGalleryPhoto(@RequestParam("url") String photoUrl, Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        if (photoUrl != null && !photoUrl.isBlank()) {
+            user.getGalleryPhotos().add(photoUrl);
+            userService.save(user);
+        }
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/gallery/delete")
+    public String deleteGalleryPhoto(@RequestParam("url") String photoUrl, Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        if (photoUrl != null && user.getGalleryPhotos().contains(photoUrl)) {
+            user.getGalleryPhotos().remove(photoUrl);
+            userService.save(user);
+        }
+        return "redirect:/profile";
+    }
+
     @GetMapping("/view/{username}")
-    public String viewOtherProfile(@PathVariable String username, Model model) {
-        User user = userService.findByUsername(username);
-        if (user == null) {
+    public String viewOtherProfile(@PathVariable String username, Model model, Principal principal) {
+        User viewedUser = userService.findByUsername(username);
+        if (viewedUser == null) {
             return "redirect:/profile";
         }
 
-        model.addAttribute("user", user);
-        model.addAttribute("friends", user.getFriends());
+        User currentUser = userService.findByUsername(principal.getName());
 
-        if (user.getDateOfBirth() != null) {
-            int age = Period.between(user.getDateOfBirth(), LocalDate.now()).getYears();
+        model.addAttribute("user", viewedUser);
+        model.addAttribute("friends", viewedUser.getFriends());
+
+        if (viewedUser.getDateOfBirth() != null) {
+            int age = Period.between(viewedUser.getDateOfBirth(), LocalDate.now()).getYears();
             model.addAttribute("age", age);
-            model.addAttribute("zodiac", calculateZodiac(user.getDateOfBirth()));
+            model.addAttribute("zodiac", calculateZodiac(viewedUser.getDateOfBirth()));
         }
+
+        model.addAttribute("isFriend", currentUser.getFriends().contains(viewedUser));
+        model.addAttribute("friendTypes", userService.listFriendTypes(currentUser.getId()));
+        model.addAttribute("gallery", viewedUser.getGalleryPhotos());
 
         return "view-profile";
     }

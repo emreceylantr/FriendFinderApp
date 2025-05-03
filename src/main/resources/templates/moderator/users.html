@@ -1,29 +1,87 @@
-<!-- src/main/resources/templates/moderator/users.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Moderatör Paneli - Kullanıcılar</title>
   <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 40px;
+    }
+
+    .panel-title {
+      color: #4CAF50;
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
     table {
+      width: 100%;
       border-collapse: collapse;
       margin: 0 auto;
     }
+
     th, td {
-      border: 1px solid black;
-      padding: 8px 12px;
+      border: 1px solid #ccc;
+      padding: 12px 15px;
+      text-align: center;
     }
+
     th {
       background-color: #f0f0f0;
     }
-    td:last-child button {
+
+    button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .view-btn {
+      background-color: #2196F3;
+      color: white;
+    }
+
+    .delete-btn {
+      background-color: #f44336;
+      color: white;
       margin-left: 5px;
+    }
+
+    .back-button {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 6px 14px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 14px;
+      font-weight: bold;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .back-button:hover {
+      background-color: #45a049;
     }
   </style>
 </head>
 <body>
 
-<h2 style="text-align: center;">Moderatör Paneli - Kullanıcılar</h2>
+<div class="panel-title">MODERATOR PANELİ</div>
+
+<h2>Kullanıcılar</h2>
 
 <table>
   <tr>
@@ -32,7 +90,7 @@
     <th>Ad</th>
     <th>Soyad</th>
     <th>Rol</th>
-    <th>İşlem</th>
+    <th>İşlemler</th>
   </tr>
   <tr th:each="u : ${users}">
     <td th:text="${u.id}"></td>
@@ -42,18 +100,17 @@
     <td th:text="${u.role}"></td>
     <td>
       <a th:href="@{/moderator/profile/{username}(username=${u.username})}">
-        <button>Görüntüle</button>
+        <button class="view-btn">Görüntüle</button>
       </a>
       <form th:action="@{/moderator/deleteUser/{id}(id=${u.id})}" method="post" style="display:inline;">
-        <button type="submit" onclick="return confirm('Kullanıcıyı silmek istediğinize emin misiniz?')">Sil</button>
+        <button class="delete-btn" type="submit" onclick="return confirm('Kullanıcıyı silmek istediğinize emin misiniz?')">Sil</button>
       </form>
     </td>
   </tr>
 </table>
 
-<br>
 <div style="text-align: center;">
-  <a th:href="@{/profile}">← Geri Dön</a>
+  <a th:href="@{/profile}" class="back-button">← Geri Dön</a>
 </div>
 
 </body>

@@ -103,16 +103,26 @@ public class UserService {
     public void sendFriendRequest(String requesterUsername, String targetUsername, Long typeId) {
         User requester = userRepo.findByUsername(requesterUsername);
         User target = userRepo.findByUsername(targetUsername);
-        FriendType type = friendTypeRepo.findById(typeId)
-                .orElseThrow(() -> new IllegalArgumentException("FriendType bulunamadı: " + typeId));
 
         if (requester == null || target == null) {
             throw new IllegalArgumentException("Geçersiz kullanıcı adı.");
         }
 
         if (target.getBlockedUsers().contains(requester)) {
-            return; // engellenmişse istek gönderilmesin
+            return; // Engellenmişse istek gönderilmesin
         }
+
+        // Aynı kullanıcıya aynı tipte istek varsa tekrar gönderilmesin
+        boolean alreadySent = friendRequestRepo.findOutgoingWithDetails(requesterUsername)
+                .stream()
+                .anyMatch(req -> req.getTarget().equals(target) && req.getType().getId().equals(typeId));
+
+        if (alreadySent) {
+            throw new IllegalArgumentException("Bu kullanıcıya aynı türde istek zaten gönderilmiş.");
+        }
+
+        FriendType type = friendTypeRepo.findById(typeId)
+                .orElseThrow(() -> new IllegalArgumentException("FriendType bulunamadı: " + typeId));
 
         FriendRequest request = new FriendRequest();
         request.setRequester(requester);
@@ -190,5 +200,16 @@ public class UserService {
 
     public boolean isBlocked(User requester, User target) {
         return target.getBlockedUsers().contains(requester);
+    }
+
+    // ✅ Arkadaşlık tipini gösteren yeni metod
+    public String getFriendTypeBetween(User a, User b) {
+        return friendRequestRepo.findAll().stream()
+                .filter(req -> req.isAccepted() &&
+                        ((req.getRequester().equals(a) && req.getTarget().equals(b)) ||
+                                (req.getRequester().equals(b) && req.getTarget().equals(a))))
+                .map(req -> req.getType().getName())
+                .findFirst()
+                .orElse("-");
     }
 }

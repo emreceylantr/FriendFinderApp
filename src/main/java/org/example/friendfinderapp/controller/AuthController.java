@@ -19,7 +19,7 @@ public class AuthController {
 
     @GetMapping("/")
     public String home() {
-        return "redirect:/profile";
+        return "auth"; // Artık direkt auth ekranı açılır
     }
 
     @GetMapping("/register")
@@ -35,8 +35,7 @@ public class AuthController {
             return "register";
         }
 
-        // ✅ Enum kullanımı: USER rolünü ata
-        user.setRole(Role.USER);
+        user.setRole(Role.USER); // Yeni kullanıcıya USER rolü ver
 
         try {
             userService.register(user);

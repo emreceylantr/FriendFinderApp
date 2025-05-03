@@ -1,24 +1,132 @@
-<!-- src/main/resources/templates/register.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Üye Ol</title>
+  <title>Kayıt Ol</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      background-image: url('https://i.postimg.cc/3wFwCx4T/Whats-App-Image-2025-05-02-at-02-54-41.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .register-container {
+      background-color: rgba(44, 44, 44, 0.85);
+      color: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      width: 320px;
+      opacity: 0;
+      animation: fadeIn 1s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    .register-container h2 {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .register-container label {
+      display: block;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .register-container input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background-color: #1e1e1e;
+      color: #fff;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .register-container input:focus {
+      outline: none;
+      border-color: #4CAF50;
+      box-shadow: 0 0 8px #4CAF50;
+    }
+
+    .register-container button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 25px;
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .register-container button:hover {
+      transform: scale(1.05);
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .login-link a {
+      color: #00aced;
+      text-decoration: none;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    .error-message {
+      color: #ff5c5c;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
-<h1>Kayıt Ol</h1>
+<div class="register-container">
+  <h2>Kayıt Ol</h2>
 
-<!-- Hata mesajı -->
-<div th:if="${error}" style="color:red;" th:text="${error}"></div>
+  <!-- Hata mesajı varsa göster -->
+  <div th:if="${error}" class="error-message">
+    <p th:text="${error}">Hata</p>
+  </div>
 
-<form th:action="@{/register}" th:object="${user}" method="post">
-  <label>Kullanıcı Adı:</label>
-  <input th:field="*{username}" required/><br/>
-  <label>Şifre:</label>
-  <input th:field="*{password}" type="password" required/><br/>
-  <button type="submit">Kayıt Ol</button>
-</form>
+  <form th:action="@{/register}" method="post">
+    <label for="username">Kullanıcı Adı:</label>
+    <input type="text" id="username" name="username" required>
 
-<p><a th:href="@{/login}">Zaten üye misiniz? Giriş Yapın</a></p>
+    <label for="password">Şifre:</label>
+    <input type="password" id="password" name="password" required>
+
+    <button type="submit">Kayıt Ol</button>
+  </form>
+
+  <div class="login-link">
+    <p>Zaten hesabınız var mı? <a th:href="@{/login}">Giriş Yap</a></p>
+  </div>
+</div>
 </body>
 </html>
